@@ -6,10 +6,13 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity('email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -17,20 +20,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(type:'string', length: 25, unique:true)]
+    #[Assert\NotBlank(message: "Vous devez saisir un nom d'utilisateur.")]
+    #[Assert\Length(min: 3, max: 25, minMessage: "Le pseudo doit faire au moins {{ limit }} caractères", maxMessage: "Le pseudo ne doit pas dépasser {{ limit }} caractères")]
     private ?string $username = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Assert\NotBlank(message: "Role is mandatory")]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(type:'string', length:64)]
+    #[Assert\Length(min: 5)]
     private ?string $password = null;
+
+    #[ORM\Column(type:'string', length:60, unique:true)]
+    #[Assert\NotBlank(message: "Vous devez saisir une adresse email.")]
+    #[Assert\Email(message: "Le format de l'adresse n'est pas correcte.")]
+    private $email;
 
     public function getId(): ?int
     {
@@ -45,6 +57,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUsername(string $username): static
     {
         $this->username = $username;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail($email): static
+    {
+        $this->email = $email;
 
         return $this;
     }
