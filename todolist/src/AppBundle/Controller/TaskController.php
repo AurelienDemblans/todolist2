@@ -22,7 +22,7 @@ class TaskController extends AbstractController
         return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findAll()]);
     }
 
-    #[Route('/tasks/create', name: 'task_create', methods: Request::METHOD_POST) ]
+    #[Route('/tasks/create', name: 'task_create', methods: [Request::METHOD_POST, Request::METHOD_GET]) ]
     public function createAction(Request $request)
     {
         $task = new Task();
