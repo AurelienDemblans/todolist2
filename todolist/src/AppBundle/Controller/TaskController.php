@@ -42,7 +42,7 @@ class TaskController extends AbstractController
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
     }
 
-    #[Route('/tasks/{id}/edit', name: 'task_edit', methods: Request::METHOD_PATCH) ]
+    #[Route('/tasks/{id}/edit', name: 'task_edit', methods: [Request::METHOD_PATCH, Request::METHOD_GET]) ]
     public function editAction(Task $task, Request $request)
     {
         $form = $this->createForm(TaskType::class, $task);
@@ -63,7 +63,7 @@ class TaskController extends AbstractController
         ]);
     }
 
-    #[Route('/tasks/{id}/toggle', name: 'task_toggle', methods: Request::METHOD_PATCH) ]
+    #[Route('/tasks/{id}/toggle', name: 'task_toggle', methods: [Request::METHOD_PATCH, Request::METHOD_GET]) ]
     public function toggleTaskAction(Task $task)
     {
         $task->toggle(!$task->isDone());
@@ -74,7 +74,7 @@ class TaskController extends AbstractController
         return $this->redirectToRoute('task_list');
     }
 
-    #[Route('/tasks/{id}/delete', name: 'task_delete', methods: Request::METHOD_DELETE) ]
+    #[Route('/tasks/{id}/delete', name: 'task_delete', methods: [Request::METHOD_DELETE, Request::METHOD_GET]) ]
     public function deleteTaskAction(Task $task)
     {
         $this->em->remove($task);
