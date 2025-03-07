@@ -23,7 +23,7 @@ class UserController extends AbstractController
         return $this->render('user/list.html.twig', ['users' => $userRepository->findAll()]);
     }
 
-    #[Route('/users/create', name: 'user_create', methods: Request::METHOD_POST)]
+    #[Route('/users/create', name: 'user_create', methods: [Request::METHOD_POST, Request::METHOD_GET])]
     public function createAction(Request $request, UserPasswordHasherInterface $passwordHasher)
     {
         $user = new User();
@@ -31,7 +31,7 @@ class UserController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $password = $passwordHasher->hashPassword(
                 $user,
                 $user->getPassword()
@@ -56,7 +56,7 @@ class UserController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $password = $passwordHasher->hashPassword(
                 $user,
                 $user->getPassword()
