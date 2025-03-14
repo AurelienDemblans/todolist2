@@ -38,6 +38,8 @@ class UserFixtures extends Fixture
             ->setEmail($email);
 
             $manager->persist($user);
+
+            $this->addReference($email, $user);
         }
 
         $manager->flush();
