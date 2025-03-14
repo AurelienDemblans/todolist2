@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\AppBundle\Entity\Task;
+use App\Entity\Task;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;

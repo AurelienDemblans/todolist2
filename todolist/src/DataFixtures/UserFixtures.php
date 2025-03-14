@@ -2,11 +2,11 @@
 
 namespace App\DataFixtures;
 
-use App\AppBundle\Entity\User;
+use App\Entity\User;
+use App\Service\RoleProvider;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
-use RoleProvider;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture

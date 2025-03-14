@@ -1,10 +1,10 @@
 <?php
 
-namespace App\AppBundle\Controller;
+namespace App\Controller;
 
-use App\AppBundle\Entity\Task;
-use App\AppBundle\Form\TaskType;
-use App\AppBundle\Repository\TaskRepository;
+use App\Entity\Task;
+use App\Form\TaskType;
+use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

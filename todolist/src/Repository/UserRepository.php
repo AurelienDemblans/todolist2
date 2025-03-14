@@ -1,8 +1,8 @@
 <?php
 
-namespace App\AppBundle\Repository;
+namespace App\Repository;
 
-use App\AppBundle\Entity\User;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;

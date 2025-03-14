@@ -1,8 +1,8 @@
 <?php
 
-namespace App\AppBundle\Entity;
+namespace App\Entity;
 
-use App\AppBundle\Repository\TaskRepository;
+use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
