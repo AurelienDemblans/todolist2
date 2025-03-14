@@ -6,28 +6,25 @@ use App\AppBundle\Entity\Task;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
 
 class TaskFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $task = new Task();
+        $faker = Factory::create('fr_FR');
 
-        $task->setContent('blablalba');
-        $task->setCreatedAt(new DateTimeImmutable());
-        $task->setTitle('blablalba');
-        $task->setIsDone(false);
+        for ($i = 0; $i < 15; $i++) {
+            $task = new Task();
+            $date = $faker->dateTime();
 
-        $manager->persist($task);
+            $task->setCreatedAt(\DateTimeImmutable::createFromMutable($date))
+            ->setContent($faker->text(100))
+            ->setTitle($faker->words(3, true))
+            ->setIsDone($faker->boolean());
 
-        $task2 = new Task();
-
-        $task2->setContent('btask2 TASTlablalba');
-        $task2->setCreatedAt(new DateTimeImmutable());
-        $task2->setTitle('DEUXIEME');
-        $task2->setIsDone(true);
-
-        $manager->persist($task2);
+            $manager->persist($task);
+        }
 
         $manager->flush();
     }

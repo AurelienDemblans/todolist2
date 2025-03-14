@@ -1,0 +1,27 @@
+<?php
+
+class RoleProvider
+{
+    public const ROLE_USER = 'ROLE_USER';
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
+
+    /**
+     * @return array<string>
+     */
+    public static function getRoleList(): array
+    {
+        return [
+            self::ROLE_USER,
+            self::ROLE_ADMIN,
+        ];
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isValidRole(string $role): bool
+    {
+        return in_array($role, self::getRoleList());
+    }
+
+}
