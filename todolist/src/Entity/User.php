@@ -31,7 +31,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var list<string> The user roles
      */
     #[ORM\Column]
-    #[Assert\NotBlank(message: "Role est obligatoire")]
     private array $roles = [];
 
     /**

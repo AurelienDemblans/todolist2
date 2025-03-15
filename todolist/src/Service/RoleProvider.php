@@ -13,8 +13,8 @@ class RoleProvider
     public static function getRoleList(): array
     {
         return [
-            'utilisateur' => self::ROLE_USER,
-            'admin' => self::ROLE_ADMIN,
+            'Utilisateur' => self::ROLE_USER,
+            'Admin' => self::ROLE_ADMIN,
         ];
     }
 

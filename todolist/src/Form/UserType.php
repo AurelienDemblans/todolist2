@@ -26,11 +26,14 @@ class UserType extends AbstractType
                 'second_options' => ['label' => 'Tapez le mot de passe à nouveau'],
             ])
             ->add('email', EmailType::class, ['label' => 'Adresse email'])
-            ->add('roles', CollectionType::class, [
-                'label' => 'Roles',
+            ->add('role', ChoiceType::class, [
+                'label' => 'Rôle',
+                'choices' => RoleProvider::getRoleList(),
+                'expanded' => false,
+                'multiple' => false,
                 'required' => true,
-                'entry_type' => ChoiceType::class,
-                'entry_options' => ['label' => false, 'choices' => RoleProvider::getRoleList()],
+                'mapped' => false,
+                'data' => $options['data'] && $options['data']->getId() ? $options['data']->getRoles()[0] : RoleProvider::ROLE_USER,
             ])
         ;
     }
