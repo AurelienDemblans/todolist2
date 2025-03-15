@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Service;
+
 class RoleProvider
 {
     public const ROLE_USER = 'ROLE_USER';

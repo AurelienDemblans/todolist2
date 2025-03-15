@@ -2,11 +2,11 @@
 
 namespace App\DataFixtures;
 
-use App\AppBundle\Entity\User;
+use App\Entity\User;
+use App\Service\RoleProvider;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
-use RoleProvider;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture
@@ -17,9 +17,10 @@ class UserFixtures extends Fixture
 
     public const USER_FIXTURE_ARRAY = [
         ['username' => 'John','roles' => RoleProvider::ROLE_ADMIN, 'password' => '12345', 'email' => 'john@test.com'],
-        ['username' => 'henri','roles' => RoleProvider::ROLE_ADMIN, 'password' => '12345', 'email' => 'henri@test.com'],
-        ['username' => 'marc','roles' => RoleProvider::ROLE_USER, 'password' => '12345', 'email' => 'marc@test.com'],
-        ['username' => 'louis','roles' => RoleProvider::ROLE_USER, 'password' => '12345', 'email' => 'louis@test.com'],
+        ['username' => 'Henri','roles' => RoleProvider::ROLE_ADMIN, 'password' => '12345', 'email' => 'henri@test.com'],
+        ['username' => 'Marc','roles' => RoleProvider::ROLE_USER, 'password' => '12345', 'email' => 'marc@test.com'],
+        ['username' => 'Louis','roles' => RoleProvider::ROLE_USER, 'password' => '12345', 'email' => 'louis@test.com'],
+        ['username' => 'Anonyme','roles' => RoleProvider::ROLE_ADMIN, 'password' => '12345', 'email' => 'admin@test.com'],
     ];
 
     public function load(ObjectManager $manager): void
@@ -37,6 +38,8 @@ class UserFixtures extends Fixture
             ->setEmail($email);
 
             $manager->persist($user);
+
+            $this->addReference($email, $user);
         }
 
         $manager->flush();

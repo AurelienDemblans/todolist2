@@ -2,30 +2,47 @@
 
 namespace App\DataFixtures;
 
-use App\AppBundle\Entity\Task;
+use App\Entity\Task;
+use App\Entity\User;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
-class TaskFixtures extends Fixture
+class TaskFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
 
+        $j = 0;
         for ($i = 0; $i < 15; $i++) {
+            if ($j > (count(UserFixtures::USER_FIXTURE_ARRAY) - 1)) {
+                $j = 0;
+            }
             $task = new Task();
             $date = $faker->dateTime();
+            $createdByReference = UserFixtures::USER_FIXTURE_ARRAY[$j]['email'];
 
             $task->setCreatedAt(\DateTimeImmutable::createFromMutable($date))
             ->setContent($faker->text(100))
             ->setTitle($faker->words(3, true))
-            ->setIsDone($faker->boolean());
+            ->setIsDone($faker->boolean())
+            ->setCreatedBy($this->getReference($createdByReference, User::class));
 
             $manager->persist($task);
+            $j++;
         }
 
         $manager->flush();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDependencies(): array
+    {
+        return [UserFixtures::class];
     }
 }

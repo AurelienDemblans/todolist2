@@ -1,8 +1,8 @@
 <?php
 
-namespace App\AppBundle\Entity;
+namespace App\Entity;
 
-use App\AppBundle\Repository\TaskRepository;
+use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -29,6 +29,10 @@ class Task
     #[ORM\Column(type:'boolean')]
     private ?bool $isDone = null;
 
+    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $createdBy = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -41,6 +45,9 @@ class Task
 
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
+        if ($this->createdAt !== null) {
+            throw new \LogicException("La date de création d'une tâche ne peut pas être modifiée.");
+        }
         $this->createdAt = $createdAt;
 
         return $this;
@@ -85,6 +92,21 @@ class Task
     public function toggle(bool $flag): static
     {
         $this->isDone = $flag;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        if ($this->createdBy !== null) {
+            throw new \LogicException("Le créateur d'une tâche ne peut pas être modifié.");
+        }
+        $this->createdBy = $createdBy;
 
         return $this;
     }

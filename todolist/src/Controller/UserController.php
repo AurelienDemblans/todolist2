@@ -1,10 +1,10 @@
 <?php
 
-namespace App\AppBundle\Controller;
+namespace App\Controller;
 
-use App\AppBundle\Entity\User;
-use App\AppBundle\Form\UserType;
-use App\AppBundle\Repository\UserRepository;
+use App\Entity\User;
+use App\Form\UserType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,7 +49,7 @@ class UserController extends AbstractController
         return $this->render('user/create.html.twig', ['form' => $form->createView()]);
     }
 
-    #[Route('/users/{id}/edit', name: 'user_edit', methods: Request::METHOD_PATCH)]
+    #[Route('/users/{id}/edit', name: 'user_edit', methods: [Request::METHOD_POST, Request::METHOD_GET])]
     public function editAction(User $user, Request $request, UserPasswordHasherInterface $passwordHasher)
     {
         $form = $this->createForm(UserType::class, $user);
