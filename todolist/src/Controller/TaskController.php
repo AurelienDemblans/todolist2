@@ -20,9 +20,14 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tasks', name: 'task_list', methods: Request::METHOD_GET) ]
-    public function listAction(TaskRepository $taskRepository)
+    public function listAction(Request $request, TaskRepository $taskRepository)
     {
-        return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findAll()]);
+        $isDone = filter_var($request->get('isDone', false), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        if ($isDone === null) {
+            throw new Exception("Le parametre de requête dans l'url n'est pas correct.");
+        }
+
+        return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findByIsDone($isDone)]);
     }
 
     #[Route('/tasks/create', name: 'task_create', methods: [Request::METHOD_POST, Request::METHOD_GET])]

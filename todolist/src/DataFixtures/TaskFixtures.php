@@ -24,10 +24,11 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
             $task = new Task();
             $date = $faker->dateTime();
             $createdByReference = UserFixtures::USER_FIXTURE_ARRAY[$j]['email'];
+            $title = $createdByReference === 'anonyme@test.com' ? $faker->words(3, true). ' (anonyme)' : $faker->words(3, true);
 
             $task->setCreatedAt(\DateTimeImmutable::createFromMutable($date))
             ->setContent($faker->text(100))
-            ->setTitle($faker->words(3, true))
+            ->setTitle($title)
             ->setIsDone($faker->boolean())
             ->setCreatedBy($this->getReference($createdByReference, User::class));
 
