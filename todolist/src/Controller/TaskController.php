@@ -5,8 +5,8 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use App\Service\RoleProvider;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -51,7 +51,7 @@ class TaskController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function editAction(Task $task, Request $request)
     {
-        if ($task->getCreatedBy() !== $this->getUser()) {
+        if ($task->getCreatedBy() !== $this->getUser() && !$this->isGranted(RoleProvider::ROLE_ADMIN)) {
             throw $this->createAccessDeniedException("Vous ne pouvez pas modifier les tâches d'autres utilisateurs.");
         }
         $form = $this->createForm(TaskType::class, $task, [

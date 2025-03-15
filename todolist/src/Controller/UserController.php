@@ -5,10 +5,8 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
-use App\Service\RoleProvider;
 use App\Service\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -29,7 +27,7 @@ class UserController extends AbstractController
 
     #[Route('/users/create', name: 'user_create', methods: [Request::METHOD_POST, Request::METHOD_GET])]
     #[IsGranted('ROLE_ADMIN')]
-    public function createAction(Request $request, UserPasswordHasherInterface $passwordHasher)
+    public function createAction(Request $request)
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
@@ -52,7 +50,7 @@ class UserController extends AbstractController
 
     #[Route('/users/{id}/edit', name: 'user_edit', methods: [Request::METHOD_POST, Request::METHOD_GET])]
     #[IsGranted('ROLE_ADMIN')]
-    public function editAction(User $user, Request $request, UserPasswordHasherInterface $passwordHasher)
+    public function editAction(User $user, Request $request)
     {
         $form = $this->createForm(UserType::class, $user);
 
