@@ -10,7 +10,7 @@ security:
     app_user_provider:
       entity:
         class: App\Entity\User
-        property: username
+        property: email
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -18,7 +18,15 @@ security:
     main:
       lazy: true
       provider: app_user_provider
-
+      form_login:
+        # "app_login" is the name of the route created previously
+        login_path: login
+        check_path: login
+        default_target_path: homepage
+        use_referer: true
+      logout:
+        path: logout
+        target: homepage # Redirection après déconnexion
       # activate different ways to authenticate
       # https://symfony.com/doc/current/security.html#the-firewall
 

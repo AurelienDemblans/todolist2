@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Task;
 use App\Entity\User;
 use DateTimeImmutable;
 use Exception;
@@ -12,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TaskType extends AbstractType
 {
@@ -36,10 +38,11 @@ class TaskType extends AbstractType
                     'Non' => false,
                 ],
                 'expanded' => true,
-                'data' => false,
+                'data' => $options['data'] && $options['data']->getId() ? $options['data']->isDone() : false,
                 'label' => 'Tâche terminée',
-            ])
-            ->add('created_at', DateTimeType::class, [
+            ]);
+        if ($options['from'] === 'ADD') {
+            $builder->add('created_at', DateTimeType::class, [
                 'widget' => 'choice',
                 'input'  => 'datetime_immutable',
                 'disabled' => false,
@@ -49,15 +52,25 @@ class TaskType extends AbstractType
                 'attr' => ['style' => 'display: none;'],
                 'view_timezone' => date_default_timezone_get()
             ])
-            ->add('createdBy', EntityType::class, [
-                'label' => 'Créé par : ',
-                'class' => User::class,
-                'choice_label' => 'username',
-                'mapped' => true,
-                'label_attr' => ['style' => 'display: none;'],
-                'attr' => ['style' => 'display: none;'],
-                'data' => $this->security->getUser(),
-            ])
-        ;
+                ->add('createdBy', EntityType::class, [
+                    'label' => 'Créé par : ',
+                    'class' => User::class,
+                    'choice_label' => 'username',
+                    'mapped' => true,
+                    'label_attr' => ['style' => 'display: none;'],
+                    'attr' => ['style' => 'display: none;'],
+                    'data' => $this->security->getUser(),
+                ]);
+        }
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class' => Task::class,
+            'from' => 'ADD',
+        ]);
+
+        $resolver->setAllowedValues('from', ['ADD', 'EDIT']);
     }
 }

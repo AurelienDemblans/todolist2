@@ -28,7 +28,9 @@ class TaskController extends AbstractController
     public function createAction(Request $request)
     {
         $task = new Task();
-        $form = $this->createForm(TaskType::class, $task);
+        $form = $this->createForm(TaskType::class, $task, [
+            'from' => 'ADD'
+        ]);
 
         $form->handleRequest($request);
 
@@ -44,10 +46,12 @@ class TaskController extends AbstractController
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
     }
 
-    #[Route('/tasks/{id}/edit', name: 'task_edit', methods: [Request::METHOD_PATCH, Request::METHOD_GET]) ]
+    #[Route('/tasks/{id}/edit', name: 'task_edit', methods: [Request::METHOD_POST, Request::METHOD_GET]) ]
     public function editAction(Task $task, Request $request)
     {
-        $form = $this->createForm(TaskType::class, $task);
+        $form = $this->createForm(TaskType::class, $task, [
+            'from' => 'EDIT'
+        ]);
 
         $form->handleRequest($request);
 
