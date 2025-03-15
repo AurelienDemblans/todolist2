@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TaskController extends AbstractController
 {
@@ -22,7 +23,8 @@ class TaskController extends AbstractController
         return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findAll()]);
     }
 
-    #[Route('/tasks/create', name: 'task_create', methods: [Request::METHOD_POST, Request::METHOD_GET]) ]
+    #[Route('/tasks/create', name: 'task_create', methods: [Request::METHOD_POST, Request::METHOD_GET])]
+    #[IsGranted('ROLE_USER')]
     public function createAction(Request $request)
     {
         $task = new Task();
