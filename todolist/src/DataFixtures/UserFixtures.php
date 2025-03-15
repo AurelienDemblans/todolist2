@@ -20,7 +20,7 @@ class UserFixtures extends Fixture
         ['username' => 'Henri','roles' => RoleProvider::ROLE_ADMIN, 'password' => '12345', 'email' => 'henri@test.com'],
         ['username' => 'Marc','roles' => RoleProvider::ROLE_USER, 'password' => '12345', 'email' => 'marc@test.com'],
         ['username' => 'Louis','roles' => RoleProvider::ROLE_USER, 'password' => '12345', 'email' => 'louis@test.com'],
-        ['username' => 'Anonyme','roles' => RoleProvider::ROLE_ADMIN, 'password' => '12345', 'email' => 'admin@test.com'],
+        ['username' => 'Anonyme','roles' => RoleProvider::ROLE_ADMIN, 'password' => '12345', 'email' => 'anonyme@test.com'],
     ];
 
     public function load(ObjectManager $manager): void

@@ -7,6 +7,7 @@ use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use App\Service\RoleProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -85,9 +86,16 @@ class TaskController extends AbstractController
         return $this->redirectToRoute('task_list');
     }
 
-    #[Route('/tasks/{id}/delete', name: 'task_delete', methods: [Request::METHOD_DELETE, Request::METHOD_GET]) ]
+    #[Route('/tasks/{id}/delete', name: 'task_delete', methods: [Request::METHOD_DELETE, Request::METHOD_GET])]
+    #[IsGranted('ROLE_USER')]
     public function deleteTaskAction(Task $task)
     {
+        if ($task->getCreatedBy()->getEmail() === 'anonyme@test.com' && !$this->isGranted(RoleProvider::ROLE_ADMIN)) {
+            throw new Exception("Les tâches liées à l'utilisateur anonyme peuvent uniquement être supprimées par des administrateur.");
+        } elseif ($task->getCreatedBy() !== $this->getUser()) {
+            throw new Exception("Vous ne pouvez pas supprimer les tâches créer par d'autres utilisateurs.");
+        }
+
         $this->em->remove($task);
         $this->em->flush();
 
