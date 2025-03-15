@@ -7,6 +7,7 @@ use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use App\Service\RoleProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -19,9 +20,14 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tasks', name: 'task_list', methods: Request::METHOD_GET) ]
-    public function listAction(TaskRepository $taskRepository)
+    public function listAction(Request $request, TaskRepository $taskRepository)
     {
-        return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findAll()]);
+        $isDone = filter_var($request->get('isDone', false), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        if ($isDone === null) {
+            throw new Exception("Le parametre de requête dans l'url n'est pas correct.");
+        }
+
+        return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findByIsDone($isDone)]);
     }
 
     #[Route('/tasks/create', name: 'task_create', methods: [Request::METHOD_POST, Request::METHOD_GET])]
@@ -85,9 +91,16 @@ class TaskController extends AbstractController
         return $this->redirectToRoute('task_list');
     }
 
-    #[Route('/tasks/{id}/delete', name: 'task_delete', methods: [Request::METHOD_DELETE, Request::METHOD_GET]) ]
+    #[Route('/tasks/{id}/delete', name: 'task_delete', methods: [Request::METHOD_DELETE, Request::METHOD_GET])]
+    #[IsGranted('ROLE_USER')]
     public function deleteTaskAction(Task $task)
     {
+        if ($task->getCreatedBy()->getEmail() === 'anonyme@test.com' && !$this->isGranted(RoleProvider::ROLE_ADMIN)) {
+            throw new Exception("Les tâches liées à l'utilisateur anonyme peuvent uniquement être supprimées par des administrateur.");
+        } elseif ($task->getCreatedBy() !== $this->getUser()) {
+            throw new Exception("Vous ne pouvez pas supprimer les tâches créer par d'autres utilisateurs.");
+        }
+
         $this->em->remove($task);
         $this->em->flush();
 
