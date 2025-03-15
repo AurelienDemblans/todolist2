@@ -45,6 +45,9 @@ class Task
 
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
+        if ($this->createdAt !== null) {
+            throw new \LogicException("La date de création d'une tâche ne peut pas être modifiée.");
+        }
         $this->createdAt = $createdAt;
 
         return $this;
@@ -100,6 +103,9 @@ class Task
 
     public function setCreatedBy(?User $createdBy): static
     {
+        if ($this->createdBy !== null) {
+            throw new \LogicException("Le créateur d'une tâche ne peut pas être modifié.");
+        }
         $this->createdBy = $createdBy;
 
         return $this;
