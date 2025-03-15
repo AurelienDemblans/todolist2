@@ -26,6 +26,5 @@ class SecurityController extends AbstractController
     #[Route('/logout', name: 'logout', methods: Request::METHOD_GET) ]
     public function logoutCheck()
     {
-        // This code is never executed.
     }
 }
