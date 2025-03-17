@@ -12,6 +12,16 @@ body {
   justify-content: center;
 }
 
+.card-title a {
+  text-decoration: none !important;
+  color: #337ab7;
+  transition: color 0.2s;
+}
+.card-title a:hover {
+  color: #0663f0;
+  text-decoration: underline !important;
+}
+
 .slide-image {
   width: 100%;
 }
