@@ -91,7 +91,7 @@ class TaskController extends AbstractController
 
         $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
 
-        return $this->redirectToRoute('task_list');
+        return $this->redirectToRoute('task_list', ['isDone' => !$task->isDone()]);
     }
 
     #[Route('/tasks/{id}/delete', name: 'task_delete', methods: [Request::METHOD_DELETE, Request::METHOD_GET])]
@@ -99,16 +99,20 @@ class TaskController extends AbstractController
     public function deleteTaskAction(Task $task)
     {
         if ($task->getCreatedBy()->getEmail() === 'anonyme@test.com' && !$this->isGranted(RoleProvider::ROLE_ADMIN)) {
-            throw new Exception("Les tâches liées à l'utilisateur anonyme peuvent uniquement être supprimées par des administrateur.");
-        } elseif ($task->getCreatedBy() !== $this->getUser()) {
-            throw new Exception("Vous ne pouvez pas supprimer les tâches créer par d'autres utilisateurs.");
+            throw new Exception("Les tâches liées à l'utilisateur anonyme peuvent uniquement être supprimées par des administrateurs.");
         }
+
+        if ($task->getCreatedBy()->getEmail() !== 'anonyme@test.com' && $task->getCreatedBy() !== $this->getUser()) {
+            throw new Exception("Vous ne pouvez pas supprimer les tâches créées par d'autres utilisateurs.");
+        }
+
+        $isDoneSave = $task->isDone();
 
         $this->em->remove($task);
         $this->em->flush();
 
         $this->addFlash('success', 'La tâche a bien été supprimée.');
 
-        return $this->redirectToRoute('task_list');
+        return $this->redirectToRoute('task_list', ['isDone' => $task->isDone()]);
     }
 }
