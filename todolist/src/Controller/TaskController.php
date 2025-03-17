@@ -28,7 +28,7 @@ class TaskController extends AbstractController
             throw new Exception("Le parametre de requête dans l'url n'est pas correct.");
         }
 
-        return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findByIsDone($isDone)]);
+        return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findByIsDone($isDone), 'title' => $isDone ? 'Liste des tâches terminées' : 'Liste des tâches à faire']);
     }
 
     #[Route('/tasks/create', name: 'task_create', methods: [Request::METHOD_POST, Request::METHOD_GET])]
@@ -50,7 +50,7 @@ class TaskController extends AbstractController
 
             $this->addFlash('success', 'La tâche a été bien été ajoutée.');
 
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute('task_list', ['isDone' => $task->isDone()]);
         }
 
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
@@ -74,7 +74,7 @@ class TaskController extends AbstractController
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
 
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute('task_list', ['isDone' => $task->isDone()]);
         }
 
         return $this->render('task/edit.html.twig', [
