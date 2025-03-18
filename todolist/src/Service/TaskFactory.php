@@ -20,7 +20,7 @@ class TaskFactory
     public function setCreatedByOnTask(Task $task): Task
     {
         if ($task->getId() !== null) {
-            throw new Exception('On ne peut pas attribuer un nouvel utilisateur à une tâche.');
+            throw new Exception("On ne peut pas éditer le créateur d'une tâche.");
         }
 
         if ($this->security->getUser() === null) {

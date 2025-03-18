@@ -20,23 +20,23 @@ class RoleProviderTest extends TestCase
         }
     }
 
-    public function testIsValidRole()
+    /**
+    * @dataProvider pricesForFoodProduct
+    */
+    public function testIsNotValidRole($role, $expectedOutput)
     {
-        $role = 'test';
         $roleProvider = new RoleProvider();
         $isValidRole = $roleProvider->isValidRole($role);
 
         self::assertIsBool($isValidRole);
-        self::assertSame(false, $isValidRole);
+        self::assertSame($expectedOutput, $isValidRole);
     }
 
-    public function testIsNotValidRole()
+    public function pricesForFoodProduct()
     {
-        $role = 'ROLE_USER';
-        $roleProvider = new RoleProvider();
-        $isValidRole = $roleProvider->isValidRole($role);
-
-        self::assertIsBool($isValidRole);
-        self::assertSame(true, $isValidRole);
+        return [
+           ['test', false],
+           ['ROLE_USER', true],
+        ];
     }
 }
