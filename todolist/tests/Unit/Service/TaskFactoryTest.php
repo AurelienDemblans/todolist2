@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Folder;
+namespace App\Tests\Unit\Service;
 
 use App\Entity\Task;
 use App\Entity\User;
