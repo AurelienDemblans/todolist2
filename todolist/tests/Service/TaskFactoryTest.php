@@ -55,12 +55,12 @@ class TaskFactoryTest extends TestCase
 
         $this->securityMock->method('getUser')->willReturn($this->user);
 
-        $this->taskFactory->setCreatedByOnTask($task);
+        $completedTask = $this->taskFactory->setCreatedByOnTask($task);
 
-        self::assertInstanceOf(Task::class, $task);
-        self::assertInstanceOf(User::class, $task->getCreatedBy());
-        self::assertSame('testUser@test.com', $task->getCreatedBy()->getEmail());
-        self::assertSame('testUser', $task->getCreatedBy()->getUsername());
+        self::assertInstanceOf(Task::class, $completedTask);
+        self::assertInstanceOf(User::class, $completedTask->getCreatedBy());
+        self::assertSame('testUser@test.com', $completedTask->getCreatedBy()->getEmail());
+        self::assertSame('testUser', $completedTask->getCreatedBy()->getUsername());
     }
 
     public function tearDown(): void
