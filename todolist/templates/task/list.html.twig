@@ -7,42 +7,59 @@
 	{% if is_granted('ROLE_USER') %}
 		<a href="{{ path('task_create') }}" class="btn btn-info pull-right">Créer une tâche</a>
 	{% endif %}
-	<div class="row">
-		{% for task in tasks %}
-			<div class="col-sm-4 col-lg-4 col-md-4">
-				<div class="thumbnail">
-					<div class="caption">
-						<h4 class="pull-right">
-							{% if task.isDone %}
-								<span class="glyphicon glyphicon-ok"></span>
-							{% else %}
-								<span class="glyphicon glyphicon-remove"></span>
-							{% endif %}
-						</h4>
-						<h4>
-							{% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and task.createdBy is same as(app.user)) %}
-								<a href="{{ path('task_edit', {'id' : task.id }) }}">{{ task.title }}</a>
-							{% else %}
-								{{ task.title }}
-							{% endif %}
-						</h4>
-						<p>{{ task.content }}</p>
+	<h3 class="text-center">{{title}}</h3>
+	<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 gy-4 gx-4">
+		{% for task in tasks|sort((a, b) => a.createdAt <=> b.createdAt) %}
+			<div class="col">
+				<div class="card h-100">
+					<div class="card-header d-flex justify-content-between fst-italic">
+						<span>
+							Date :
+							{{ task.createdAt|date('d-m-Y') }}
+						</span>
+						<span>
+							Auteur :
+							{{ task.createdBy.username}}
+						</span>
 					</div>
-					<div>
-						{% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and task.createdBy is same as(app.user)) %}
-							<form action="{{ path('task_toggle', {'id' : task.id }) }}">
-								<button class="btn btn-success btn-sm pull-right">
-									{% if not task.isDone %}Marquer comme faite{% else %}Marquer non terminée
+					<div class="card-body p-2">
+						<div class="row">
+							<div class="col-10">
+								<h5 class="card-title">
+									{% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and task.createdBy is same as(app.user)) %}
+										<a href="{{ path('task_edit', {'id' : task.id }) }}">{{ task.title }}</a>
+									{% else %}
+										{{ task.title }}
 									{% endif %}
-								</button>
-							</form>
-						{% endif %}
-						{% if (is_granted('ROLE_USER') and task.createdBy is same as(app.user)) or (task.createdBy.email is same as('anonyme@test.com')) %}
-							<form action="{{ path('task_delete', {'id' : task.id }) }}">
-								<button class="btn btn-danger btn-sm pull-right">Supprimer</button>
-							</form>
-						{% endif %}
+								</h5>
+							</div>
+							<div class="col-2">
+								{% if task.isDone %}
+									<i class="bi bi-check fs-3"></i>
+								{% else %}
+									<i class="bi bi-x fs-3"></i>
+								{% endif %}
+							</div>
+						</div>
+						<p class="card-text">{{ task.content }}</p>
 					</div>
+					{% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and task.createdBy is same as(app.user)) %}
+						<div class="card-footer d-flex justify-content-between">
+							{% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and task.createdBy is same as(app.user)) %}
+								<form action="{{ path('task_toggle', {'id' : task.id }) }}">
+									<button class="btn btn-success btn-sm pull-right">
+										{% if not task.isDone %}Marquer comme faite{% else %}Marquer non terminée
+										{% endif %}
+									</button>
+								</form>
+							{% endif %}
+							{% if (is_granted('ROLE_USER') and task.createdBy is same as(app.user)) or (task.createdBy.email is same as('anonyme@test.com') and is_granted('ROLE_ADMIN')) %}
+								<form action="{{ path('task_delete', {'id' : task.id }) }}">
+									<button class="btn btn-danger btn-sm pull-right">Supprimer</button>
+								</form>
+							{% endif %}
+						</div>
+					{% endif %}
 				</div>
 			</div>
 		{% else %}

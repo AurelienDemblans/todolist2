@@ -17,16 +17,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TaskType extends AbstractType
 {
-    private $security;
-
-    public function __construct(Security $security)
-    {
-        $this->security = $security;
-        if ($security->getUser() === null) {
-            throw new Exception('Aucun utilisateur connecté');
-        }
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -51,16 +41,7 @@ class TaskType extends AbstractType
                 'label_attr' => ['style' => 'display: none;'],
                 'attr' => ['style' => 'display: none;'],
                 'view_timezone' => date_default_timezone_get()
-            ])
-                ->add('createdBy', EntityType::class, [
-                    'label' => 'Créé par : ',
-                    'class' => User::class,
-                    'choice_label' => 'username',
-                    'mapped' => true,
-                    'label_attr' => ['style' => 'display: none;'],
-                    'attr' => ['style' => 'display: none;'],
-                    'data' => $this->security->getUser(),
-                ]);
+            ]);
         }
     }
 
