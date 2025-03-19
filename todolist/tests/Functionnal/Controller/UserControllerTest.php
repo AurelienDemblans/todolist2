@@ -135,8 +135,8 @@ class UserControllerTest extends WebTestCase
         $crawler = $this->client->request(Request::METHOD_POST, $this->urlGenerator->generate($this->editRouteName, ['id' => $this->userRoleUser->getId()]));
         $form = $crawler->selectButton('Modifier')->form();
 
-        $form['user[username]'] = 'Plat de pâtes';
-        $form['user[email]'] = 'lolmdr@lolmdr.com';
+        $form['user[username]'] = 'JohnTest';
+        $form['user[email]'] = 'testtest@test.com';
         $form['user[password][first]'] = '123456';
         $form['user[password][second]'] = '123456';
         $form['user[role]'] = 'ROLE_USER';
@@ -148,6 +148,75 @@ class UserControllerTest extends WebTestCase
         $this->assertSame('/users', $this->client->getRequest()->getPathInfo());
         $this->assertStringContainsString(
             "L'utilisateur a bien été modifié",
+            $crawler->filter('.alert.alert-success')->text()
+        );
+    }
+
+    public function testCreatePageNotLogged()
+    {
+        $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate($this->createRouteName));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->assertSame('/login', $this->client->getRequest()->getPathInfo());
+    }
+
+    public function testCreatePageAsRoleUser()
+    {
+        $this->logAsRoleUser();
+
+        $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate($this->createRouteName));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testCreatePageAsRoleAdmin()
+    {
+        $this->logAsRoleAdmin();
+
+        $crawler = $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate($this->createRouteName));
+
+        $this->assertSelectorTextContains('h1', 'Créer un utilisateur');
+
+        $expectedFields = [
+            'user[username]',
+            'user[email]',
+            'user[password][first]',
+            'user[password][second]',
+            'user[role]'
+        ];
+
+        $form = $crawler->selectButton('Ajouter')->form();
+
+        foreach ($expectedFields as $fieldName) {
+            $this->assertTrue(
+                $form->has($fieldName),
+                "Le champ '$fieldName' est manquant dans le formulaire"
+            );
+        }
+    }
+
+    public function testSubmitCreateAsRoleAdmin()
+    {
+        $this->logAsRoleAdmin();
+
+        $crawler = $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate($this->createRouteName));
+        $form = $crawler->selectButton('Ajouter')->form();
+
+        $this->assertSelectorTextContains('h1', 'Créer un utilisateur');
+
+        $form['user[username]'] = 'test';
+        $form['user[email]'] = 'test@test.com';
+        $form['user[password][first]'] = '123456';
+        $form['user[password][second]'] = '123456';
+        $form['user[role]'] = 'ROLE_USER';
+
+        $crawler = $this->client->submit($form);
+        $this->client->followRedirects(true);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->assertSame('/users', $this->client->getRequest()->getPathInfo());
+        $this->assertStringContainsString(
+            "Superbe ! L'utilisateur a bien été ajouté.",
             $crawler->filter('.alert.alert-success')->text()
         );
     }
