@@ -142,7 +142,6 @@ class UserControllerTest extends WebTestCase
         $form['user[role]'] = 'ROLE_USER';
 
         $crawler = $this->client->submit($form);
-        $this->client->followRedirects(true);
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertSame('/users', $this->client->getRequest()->getPathInfo());
@@ -211,7 +210,6 @@ class UserControllerTest extends WebTestCase
         $form['user[role]'] = 'ROLE_USER';
 
         $crawler = $this->client->submit($form);
-        $this->client->followRedirects(true);
 
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertSame('/users', $this->client->getRequest()->getPathInfo());
@@ -229,6 +227,7 @@ class UserControllerTest extends WebTestCase
 
         $this->client->loginUser($user);
     }
+
     private function logAsRoleAdmin(): void
     {
         $user = $this->userRepository->findOneByEmail(
