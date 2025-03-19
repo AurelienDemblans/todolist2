@@ -25,7 +25,7 @@ class RoleProviderTest extends TestCase
     /**
     * @dataProvider pricesForFoodProduct
     */
-    public function testIsNotValidRole($role, $expectedOutput)
+    public function testIsValidRole($role, $expectedOutput)
     {
         $roleProvider = new RoleProvider();
         $isValidRole = $roleProvider->isValidRole($role);

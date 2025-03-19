@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functionnal\Controller;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -11,11 +12,15 @@ use Symfony\Component\Routing\RouterInterface;
 
 class UserControllerTest extends WebTestCase
 {
+    private User|null $userRoleAdmin = null;
+    private User|null $userRoleUser = null;
     private KernelBrowser|null $client = null;
     private UserRepository|null $userRepository = null;
     private object|null $urlGenerator = null;
     private array $userEmails = ['admin' => "john@test.com", 'user' => "marc@test.com"];
     private string $listRouteName = "user_list";
+    private string $editRouteName = 'user_edit';
+    private string $createRouteName = 'user_create';
 
     public function setUp(): void
     {
@@ -23,11 +28,17 @@ class UserControllerTest extends WebTestCase
         $this->client->followRedirects();
 
         $this->userRepository = static::getContainer()->get(UserRepository::class);
+        $this->userRoleAdmin = $this->userRepository->findOneByEmail(
+            'john@test.com'
+        );
+        $this->userRoleUser = $this->userRepository->findOneByEmail(
+            'marc@test.com'
+        );
 
         $this->urlGenerator = static::getContainer()->get(RouterInterface::class);
     }
 
-    public function testNotLogged()
+    public function testListPageNotLogged()
     {
         $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate($this->listRouteName));
 
@@ -39,9 +50,7 @@ class UserControllerTest extends WebTestCase
     {
         $this->logAsRoleUser();
 
-        $urlGenerator = static::getContainer()->get(RouterInterface::class);
-
-        $crawler = $this->client->request(Request::METHOD_GET, $urlGenerator->generate($this->listRouteName));
+        $crawler = $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate($this->listRouteName));
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('.container h1', 'Liste des utilisateurs');
@@ -58,9 +67,7 @@ class UserControllerTest extends WebTestCase
     {
         $this->logAsRoleAdmin();
 
-        $urlGenerator = static::getContainer()->get(RouterInterface::class);
-
-        $crawler = $this->client->request(Request::METHOD_GET, $urlGenerator->generate($this->listRouteName));
+        $crawler = $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate($this->listRouteName));
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('.container h1', 'Liste des utilisateurs');
@@ -72,6 +79,76 @@ class UserControllerTest extends WebTestCase
             3,
             $crawler->filter('tr:first-child td'),
             "Il y'a plus de 2 cellule par lignes."
+        );
+    }
+
+    public function testEditPageNotLogged()
+    {
+        $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate($this->editRouteName, ['id' => 1]));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->assertSame('/login', $this->client->getRequest()->getPathInfo());
+    }
+
+    public function testEditPageAsRoleUser()
+    {
+        $this->logAsRoleUser();
+
+        $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate($this->editRouteName, ['id' => $this->userRoleUser->getId()]));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testEditPageAsRoleAdmin()
+    {
+        $userToEdit = $this->userRoleAdmin;
+        $this->logAsRoleAdmin();
+
+        $crawler = $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate($this->editRouteName, ['id' => $this->userRoleAdmin->getId()]));
+
+        $this->assertSelectorTextContains('h1', 'Modifier');
+        $this->assertSelectorTextContains('h1 strong', $userToEdit->getUsername());
+
+        $expectedFields = [
+            'user[username]',
+            'user[email]',
+            'user[password][first]',
+            'user[password][second]',
+            'user[role]'
+        ];
+
+        $form = $crawler->selectButton('Modifier')->form();
+
+        foreach ($expectedFields as $fieldName) {
+            $this->assertTrue(
+                $form->has($fieldName),
+                "Le champ '$fieldName' est manquant dans le formulaire"
+            );
+        }
+    }
+
+    public function testSubmitEditFormAsAdmin()
+    {
+        $userToEdit = $this->userRoleUser;
+        $this->logAsRoleAdmin();
+
+        $crawler = $this->client->request(Request::METHOD_POST, $this->urlGenerator->generate($this->editRouteName, ['id' => $this->userRoleUser->getId()]));
+        $form = $crawler->selectButton('Modifier')->form();
+
+        $form['user[username]'] = 'Plat de pâtes';
+        $form['user[email]'] = 'lolmdr@lolmdr.com';
+        $form['user[password][first]'] = '123456';
+        $form['user[password][second]'] = '123456';
+        $form['user[role]'] = 'ROLE_USER';
+
+        $crawler = $this->client->submit($form);
+        $this->client->followRedirects(true);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->assertSame('/users', $this->client->getRequest()->getPathInfo());
+        $this->assertStringContainsString(
+            "L'utilisateur a bien été modifié",
+            $crawler->filter('.alert.alert-success')->text()
         );
     }
 
