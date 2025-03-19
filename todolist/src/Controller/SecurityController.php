@@ -22,9 +22,4 @@ class SecurityController extends AbstractController
             'error'         => $error,
         ]);
     }
-
-    #[Route('/logout', name: 'logout', methods: Request::METHOD_GET) ]
-    public function logoutCheck()
-    {
-    }
 }
