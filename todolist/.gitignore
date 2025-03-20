@@ -23,3 +23,7 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###> public ###
+/public/test-coverage/
+###> public ###

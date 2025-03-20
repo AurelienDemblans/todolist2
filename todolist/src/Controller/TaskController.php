@@ -8,9 +8,10 @@ use App\Repository\TaskRepository;
 use App\Service\RoleProvider;
 use App\Service\TaskFactory;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -25,7 +26,7 @@ class TaskController extends AbstractController
     {
         $isDone = filter_var($request->get('isDone', false), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
         if ($isDone === null) {
-            throw new Exception("Le parametre de requête dans l'url n'est pas correct.");
+            throw new BadRequestHttpException("Le parametre de requête dans l'url n'est pas correct.");
         }
 
         return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findByIsDone($isDone), 'title' => $isDone ? 'Liste des tâches terminées' : 'Liste des tâches à faire']);
@@ -83,7 +84,7 @@ class TaskController extends AbstractController
         ]);
     }
 
-    #[Route('/tasks/{id}/toggle', name: 'task_toggle', methods: [Request::METHOD_PATCH, Request::METHOD_GET]) ]
+    #[Route('/tasks/{id}/toggle', name: 'task_toggle', methods: [Request::METHOD_GET]) ]
     public function toggleTaskAction(Task $task)
     {
         $task->toggle(!$task->isDone());
@@ -99,11 +100,11 @@ class TaskController extends AbstractController
     public function deleteTaskAction(Task $task)
     {
         if ($task->getCreatedBy()->getEmail() === 'anonyme@test.com' && !$this->isGranted(RoleProvider::ROLE_ADMIN)) {
-            throw new Exception("Les tâches liées à l'utilisateur anonyme peuvent uniquement être supprimées par des administrateurs.");
+            throw new BadRequestHttpException("Les tâches liées à l'utilisateur anonyme peuvent uniquement être supprimées par des administrateurs.");
         }
 
         if ($task->getCreatedBy()->getEmail() !== 'anonyme@test.com' && $task->getCreatedBy() !== $this->getUser()) {
-            throw new Exception("Vous ne pouvez pas supprimer les tâches créées par d'autres utilisateurs.");
+            throw new BadRequestHttpException("Vous ne pouvez pas supprimer les tâches créées par d'autres utilisateurs.");
         }
 
         $isDoneSave = $task->isDone();
