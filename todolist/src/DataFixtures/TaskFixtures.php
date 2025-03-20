@@ -36,6 +36,33 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
             $j++;
         }
 
+
+        $task = new Task();
+        $date = $faker->dateTime();
+        $createdByReference = UserFixtures::USER_FIXTURE_ARRAY[4]['email'];
+        $title = $faker->words(3, true);
+
+        $task->setCreatedAt(\DateTimeImmutable::createFromMutable($date))
+        ->setContent($faker->text(100))
+        ->setTitle($title)
+        ->setIsDone(true)
+        ->setCreatedBy($this->getReference($createdByReference, User::class));
+
+        $manager->persist($task);
+
+        $task = new Task();
+        $date = $faker->dateTime();
+        $createdByReference = UserFixtures::USER_FIXTURE_ARRAY[4]['email'];
+        $title = $faker->words(3, true);
+
+        $task->setCreatedAt(\DateTimeImmutable::createFromMutable($date))
+        ->setContent($faker->text(100))
+        ->setTitle($title)
+        ->setIsDone(false)
+        ->setCreatedBy($this->getReference($createdByReference, User::class));
+
+        $manager->persist($task);
+
         $manager->flush();
     }
 

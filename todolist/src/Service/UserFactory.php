@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\User;
 use Exception;
 use Symfony\Component\Form\Form;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFactory
@@ -28,7 +29,7 @@ class UserFactory
         $user->setPassword($password);
 
         if (!RoleProvider::isValidRole($form->get('role')->getData())) {
-            throw new Exception('Le role attribué est invalide.');
+            throw new BadRequestHttpException('Le role attribué est invalide.');
         }
 
         $user->setRoles([$form->get('role')->getData()]);

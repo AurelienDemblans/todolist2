@@ -3,8 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Task;
-use Exception;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class TaskFactory
 {
@@ -20,11 +20,11 @@ class TaskFactory
     public function setCreatedByOnTask(Task $task): Task
     {
         if ($task->getId() !== null) {
-            throw new Exception("On ne peut pas éditer le créateur d'une tâche.");
+            throw new BadRequestHttpException("On ne peut pas éditer le créateur d'une tâche.");
         }
 
         if ($this->security->getUser() === null) {
-            throw new Exception('Aucun utilisateur connecté');
+            throw new BadRequestHttpException('Aucun utilisateur connecté');
         }
 
         $task->setCreatedBy($this->security->getUser());
