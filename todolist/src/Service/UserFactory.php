@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Entity\User;
-use Exception;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
