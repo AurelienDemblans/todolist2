@@ -4,7 +4,7 @@
 
 - lancez votre serveur (par exemple ici : wamp64). 
 - Choisir un dossier pour accueillir le projet et s'y positionner dans une boite de commande (exemple : C/ProjetOpenClassroom). 
-- cloner le projet avec git en copiant l'URL du repository et exécuter la commande : git clone [https://github.com/AurelienDemblans/BilemoAPI.git](https://github.com/AurelienDemblans/todolist2.git)
+- cloner le projet avec git en copiant l'URL du repository et exécuter la commande : git clone https://github.com/AurelienDemblans/todolist2.git
 - Dans le dossier que la commande git clone vient de créer , se positionner sur /todolist
 - dans le fichier .env ajouter : APP_TIMEZONE=Europe/Paris et mettez à jour les informations correspondants à vos paramètres (DATABASE_URL et APP_SECRET notamment)
 - lancer la commande "composer install"
