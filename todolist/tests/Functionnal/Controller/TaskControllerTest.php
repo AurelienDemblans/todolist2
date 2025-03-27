@@ -28,13 +28,6 @@ class TaskControllerTest extends WebTestCase
 
         $this->userRepository = static::getContainer()->get(UserRepository::class);
         $this->taskRepository = static::getContainer()->get(TaskRepository::class);
-        $this->userRoleAdmin = $this->userRepository->findOneByEmail(
-            'john@test.com'
-        );
-        $this->userRoleUser = $this->userRepository->findOneByEmail(
-            'marc@test.com'
-        );
-
         $this->urlGenerator = static::getContainer()->get(RouterInterface::class);
     }
 
@@ -56,16 +49,16 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorTextContains('.container h3', 'Liste des tâches terminées');
 
         $this->assertCount(
-            10,
+            25,
             $crawler->filter('div.card')
         );
 
         $this->assertCount(
-            2,
+            5,
             $crawler->filter('h5 a[href^="/tasks/"][href$="/edit"]')
         );
         $this->assertCount(
-            2,
+            5,
             $crawler->selectButton('Marquer non terminée')
         );
     }
@@ -89,12 +82,12 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorTextContains('.container h3', 'Liste des tâches à faire');
 
         $this->assertCount(
-            7,
+            25,
             $crawler->filter('div.card')
         );
 
         $this->assertCount(
-            1,
+            5,
             $crawler->filter('h5 a[href^="/tasks/"][href$="/edit"]')
         );
     }

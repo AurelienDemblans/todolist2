@@ -16,52 +16,36 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        $j = 0;
-        for ($i = 0; $i < 15; $i++) {
-            if ($j > (count(UserFixtures::USER_FIXTURE_ARRAY) - 1)) {
-                $j = 0;
+        foreach (UserFixtures::USER_FIXTURE_ARRAY as ['username' => $username,'roles' => $role, 'password' => $password, 'email' => $email]) {
+            for ($i = 0; $i < 5; $i++) {
+                $task = new Task();
+                $date = $faker->dateTime();
+                $createdByReference = $email;
+                $title = $createdByReference === 'anonyme@test.com' ? $faker->words(3, true). ' (anonyme)' : $faker->words(3, true);
+
+                $task->setCreatedAt(\DateTimeImmutable::createFromMutable($date))
+                ->setContent($faker->text(100))
+                ->setTitle($title)
+                ->setIsDone(true)
+                ->setCreatedBy($this->getReference($createdByReference, User::class));
+
+                $manager->persist($task);
             }
-            $task = new Task();
-            $date = $faker->dateTime();
-            $createdByReference = UserFixtures::USER_FIXTURE_ARRAY[$j]['email'];
-            $title = $createdByReference === 'anonyme@test.com' ? $faker->words(3, true). ' (anonyme)' : $faker->words(3, true);
+            for ($i = 0; $i < 5; $i++) {
+                $task = new Task();
+                $date = $faker->dateTime();
+                $createdByReference = $email;
+                $title = $createdByReference === 'anonyme@test.com' ? $faker->words(3, true). ' (anonyme)' : $faker->words(3, true);
 
-            $task->setCreatedAt(\DateTimeImmutable::createFromMutable($date))
-            ->setContent($faker->text(100))
-            ->setTitle($title)
-            ->setIsDone($faker->boolean())
-            ->setCreatedBy($this->getReference($createdByReference, User::class));
+                $task->setCreatedAt(\DateTimeImmutable::createFromMutable($date))
+                ->setContent($faker->text(100))
+                ->setTitle($title)
+                ->setIsDone(false)
+                ->setCreatedBy($this->getReference($createdByReference, User::class));
 
-            $manager->persist($task);
-            $j++;
+                $manager->persist($task);
+            }
         }
-
-
-        $task = new Task();
-        $date = $faker->dateTime();
-        $createdByReference = UserFixtures::USER_FIXTURE_ARRAY[4]['email'];
-        $title = $faker->words(3, true);
-
-        $task->setCreatedAt(\DateTimeImmutable::createFromMutable($date))
-        ->setContent($faker->text(100))
-        ->setTitle($title)
-        ->setIsDone(true)
-        ->setCreatedBy($this->getReference($createdByReference, User::class));
-
-        $manager->persist($task);
-
-        $task = new Task();
-        $date = $faker->dateTime();
-        $createdByReference = UserFixtures::USER_FIXTURE_ARRAY[4]['email'];
-        $title = $faker->words(3, true);
-
-        $task->setCreatedAt(\DateTimeImmutable::createFromMutable($date))
-        ->setContent($faker->text(100))
-        ->setTitle($title)
-        ->setIsDone(false)
-        ->setCreatedBy($this->getReference($createdByReference, User::class));
-
-        $manager->persist($task);
 
         $manager->flush();
     }
