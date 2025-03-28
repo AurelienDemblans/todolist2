@@ -17,159 +17,159 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity('email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+	#[ORM\Id]
+	#[ORM\GeneratedValue]
+	#[ORM\Column]
+	private ?int $id = null;
 
-    #[ORM\Column(type:'string', length: 25, unique:true)]
-    #[Assert\NotBlank(message: "Vous devez saisir un nom d'utilisateur.")]
-    #[Assert\Length(min: 3, max: 25, minMessage: "Le pseudo doit faire au moins {{ limit }} caractères", maxMessage: "Le pseudo ne doit pas dépasser {{ limit }} caractères")]
-    private ?string $username = null;
+	#[ORM\Column(type:'string', length: 25, unique:true)]
+	#[Assert\NotBlank(message: "Vous devez saisir un nom d'utilisateur.")]
+	#[Assert\Length(min: 3, max: 25, minMessage: 'Le pseudo doit faire au moins {{ limit }} caractères', maxMessage: 'Le pseudo ne doit pas dépasser {{ limit }} caractères')]
+	private ?string $username = null;
 
-    /**
-     * @var list<string> The user roles
-     */
-    #[ORM\Column]
-    private array $roles = [];
+	/**
+	 * @var list<string> The user roles
+	 */
+	#[ORM\Column]
+	private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
-    #[ORM\Column(type:'string', length:64)]
-    #[Assert\Length(min: 5)]
-    private ?string $password = null;
+	/**
+	 * @var string The hashed password
+	 */
+	#[ORM\Column(type:'string', length:64)]
+	#[Assert\Length(min: 5)]
+	private ?string $password = null;
 
-    #[ORM\Column(type:'string', length:60, unique:true)]
-    #[Assert\NotBlank(message: "Vous devez saisir une adresse email.")]
-    #[Assert\Email(message: "Le format de l'adresse n'est pas correcte.")]
-    private $email;
+	#[ORM\Column(type:'string', length:60, unique:true)]
+	#[Assert\NotBlank(message: 'Vous devez saisir une adresse email.')]
+	#[Assert\Email(message: "Le format de l'adresse n'est pas correcte.")]
+	private $email;
 
-    /**
-     * @var Collection<int, Task>
-     */
-    #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'createdBy')]
-    private Collection $tasks;
+	/**
+	 * @var Collection<int, Task>
+	 */
+	#[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'createdBy')]
+	private Collection $tasks;
 
-    public function __construct()
-    {
-        $this->tasks = new ArrayCollection();
-    }
+	public function __construct()
+	{
+		$this->tasks = new ArrayCollection();
+	}
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+	public function getId(): ?int
+	{
+		return $this->id;
+	}
 
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
+	public function getUsername(): ?string
+	{
+		return $this->username;
+	}
 
-    public function setUsername(string $username): static
-    {
-        $this->username = $username;
+	public function setUsername(string $username): static
+	{
+		$this->username = $username;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
+	public function getEmail(): ?string
+	{
+		return $this->email;
+	}
 
-    public function setEmail($email): static
-    {
-        $this->email = $email;
+	public function setEmail($email): static
+	{
+		$this->email = $email;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
-    public function getUserIdentifier(): string
-    {
-        return (string) $this->username;
-    }
+	/**
+	 * A visual identifier that represents this user.
+	 *
+	 * @see UserInterface
+	 */
+	public function getUserIdentifier(): string
+	{
+		return (string) $this->username;
+	}
 
-    /**
-     * @see UserInterface
-     *
-     * @return list<string>
-     */
-    public function getRoles(): array
-    {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+	/**
+	 * @see UserInterface
+	 *
+	 * @return list<string>
+	 */
+	public function getRoles(): array
+	{
+		$roles = $this->roles;
+		// guarantee every user at least has ROLE_USER
+		$roles[] = 'ROLE_USER';
 
-        return array_unique($roles);
-    }
+		return array_unique($roles);
+	}
 
-    /**
-     * @param list<string> $roles
-     */
-    public function setRoles(array $roles): static
-    {
-        $this->roles = $roles;
+	/**
+	 * @param list<string> $roles
+	 */
+	public function setRoles(array $roles): static
+	{
+		$this->roles = $roles;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
+	/**
+	 * @see PasswordAuthenticatedUserInterface
+	 */
+	public function getPassword(): ?string
+	{
+		return $this->password;
+	}
 
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
+	public function setPassword(string $password): static
+	{
+		$this->password = $password;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials(): void
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
+	/**
+	 * @see UserInterface
+	 */
+	public function eraseCredentials(): void
+	{
+		// If you store any temporary, sensitive data on the user, clear it here
+		// $this->plainPassword = null;
+	}
 
-    /**
-     * @return Collection<int, Task>
-     */
-    public function getTasks(): Collection
-    {
-        return $this->tasks;
-    }
+	/**
+	 * @return Collection<int, Task>
+	 */
+	public function getTasks(): Collection
+	{
+		return $this->tasks;
+	}
 
-    public function addTask(Task $task): static
-    {
-        if (!$this->tasks->contains($task)) {
-            $this->tasks->add($task);
-            $task->setCreatedBy($this);
-        }
+	public function addTask(Task $task): static
+	{
+		if (!$this->tasks->contains($task)) {
+			$this->tasks->add($task);
+			$task->setCreatedBy($this);
+		}
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function removeTask(Task $task): static
-    {
-        if ($this->tasks->removeElement($task)) {
-            // set the owning side to null (unless already changed)
-            if ($task->getCreatedBy() === $this) {
-                $task->setCreatedBy(null);
-            }
-        }
+	public function removeTask(Task $task): static
+	{
+		if ($this->tasks->removeElement($task)) {
+			// set the owning side to null (unless already changed)
+			if ($task->getCreatedBy() === $this) {
+				$task->setCreatedBy(null);
+			}
+		}
 
-        return $this;
-    }
+		return $this;
+	}
 }
