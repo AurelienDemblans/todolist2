@@ -15,7 +15,7 @@ class UserFactory
     }
 
     /**
-     * @param User $user
+     * @param User          $user
      * @param FormInterface $form
      *
      * @return User
