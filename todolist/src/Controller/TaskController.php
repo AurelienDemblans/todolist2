@@ -99,11 +99,11 @@ class TaskController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function deleteTaskAction(Task $task): Response
     {
-        if ($task->getCreatedBy()->getEmail() === 'anonyme@test.com' && !$this->isGranted(RoleProvider::ROLE_ADMIN)) {
+        if ($task->getCreatedBy()?->getEmail() === 'anonyme@test.com' && !$this->isGranted(RoleProvider::ROLE_ADMIN)) {
             throw new BadRequestHttpException("Les tâches liées à l'utilisateur anonyme peuvent uniquement être supprimées par des administrateurs.");
         }
 
-        if ($task->getCreatedBy()->getEmail() !== 'anonyme@test.com' && $task->getCreatedBy() !== $this->getUser()) {
+        if ($task->getCreatedBy()?->getEmail() !== 'anonyme@test.com' && $task->getCreatedBy() !== $this->getUser()) {
             throw new BadRequestHttpException("Vous ne pouvez pas supprimer les tâches créées par d'autres utilisateurs.");
         }
 

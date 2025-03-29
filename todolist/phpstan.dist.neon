@@ -1,6 +1,7 @@
 parameters:
     ignoreErrors:
         - '#Property App\\Entity\\User::\$id \(int\|null\) is never assigned int so it can be removed from the property type\.#'
+    reportUnmatchedIgnoredErrors: false
     level: 6
     paths:
         - bin/
