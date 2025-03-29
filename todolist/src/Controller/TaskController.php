@@ -10,6 +10,7 @@ use App\Service\TaskFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -21,7 +22,7 @@ class TaskController extends AbstractController
 	}
 
 	#[Route('/tasks', name: 'task_list', methods: Request::METHOD_GET) ]
-	public function listAction(Request $request, TaskRepository $taskRepository)
+	public function listAction(Request $request, TaskRepository $taskRepository): Response
 	{
 		$isDone = filter_var($request->get('isDone', false), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 		if ($isDone === null) {
@@ -33,7 +34,7 @@ class TaskController extends AbstractController
 
 	#[Route('/tasks/create', name: 'task_create', methods: [Request::METHOD_POST, Request::METHOD_GET])]
 	#[IsGranted('ROLE_USER')]
-	public function createAction(Request $request)
+	public function createAction(Request $request): Response
 	{
 		$task = new Task();
 		$form = $this->createForm(TaskType::class, $task, [
@@ -58,7 +59,7 @@ class TaskController extends AbstractController
 
 	#[Route('/tasks/{id}/edit', name: 'task_edit', methods: [Request::METHOD_POST, Request::METHOD_GET])]
 	#[IsGranted('ROLE_USER')]
-	public function editAction(Task $task, Request $request)
+	public function editAction(Task $task, Request $request): Response
 	{
 		if ($task->getCreatedBy() !== $this->getUser() && !$this->isGranted(RoleProvider::ROLE_ADMIN)) {
 			throw $this->createAccessDeniedException("Vous ne pouvez pas modifier les tâches d'autres utilisateurs.");
@@ -84,7 +85,7 @@ class TaskController extends AbstractController
 	}
 
 	#[Route('/tasks/{id}/toggle', name: 'task_toggle', methods: [Request::METHOD_GET]) ]
-	public function toggleTaskAction(Task $task)
+	public function toggleTaskAction(Task $task): Response
 	{
 		$task->toggle(!$task->isDone());
 		$this->em->flush();
@@ -96,13 +97,13 @@ class TaskController extends AbstractController
 
 	#[Route('/tasks/{id}/delete', name: 'task_delete', methods: [Request::METHOD_DELETE, Request::METHOD_GET])]
 	#[IsGranted('ROLE_USER')]
-	public function deleteTaskAction(Task $task)
+	public function deleteTaskAction(Task $task): Response
 	{
-		if ($task->getCreatedBy()->getEmail() === 'anonyme@test.com' && !$this->isGranted(RoleProvider::ROLE_ADMIN)) {
+		if ($task->getCreatedBy()?->getEmail() === 'anonyme@test.com' && !$this->isGranted(RoleProvider::ROLE_ADMIN)) {
 			throw new BadRequestHttpException("Les tâches liées à l'utilisateur anonyme peuvent uniquement être supprimées par des administrateurs.");
 		}
 
-		if ($task->getCreatedBy()->getEmail() !== 'anonyme@test.com' && $task->getCreatedBy() !== $this->getUser()) {
+		if ($task->getCreatedBy()?->getEmail() !== 'anonyme@test.com' && $task->getCreatedBy() !== $this->getUser()) {
 			throw new BadRequestHttpException("Vous ne pouvez pas supprimer les tâches créées par d'autres utilisateurs.");
 		}
 

@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\User;
 use App\Service\RoleProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -13,8 +14,12 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 
 class UserType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
+	public function buildForm(FormBuilderInterface $builder, array $options): void
 	{
+		$user        = $options['data'] ?? null;
+		$userHasId   = $user instanceof User && $user->getId() !== null;
+		$defaultRole = $userHasId ? $user->getRoles()[0] : RoleProvider::ROLE_USER;
+
 		$builder
 			->add('username', TextType::class, ['label' => "Nom d'utilisateur"])
 			->add('password', RepeatedType::class, [
@@ -32,7 +37,7 @@ class UserType extends AbstractType
 				'multiple' => false,
 				'required' => true,
 				'mapped'   => false,
-				'data'     => $options['data'] && $options['data']->getId() ? $options['data']->getRoles()[0] : RoleProvider::ROLE_USER,
+				'data'     => $defaultRole,
 			])
 		;
 	}

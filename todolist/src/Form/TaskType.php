@@ -13,8 +13,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TaskType extends AbstractType
 {
-	public function buildForm(FormBuilderInterface $builder, array $options)
+	public function buildForm(FormBuilderInterface $builder, array $options): void
 	{
+		$task          = $options['data'] ?? null;
+		$taskHasId     = $task instanceof Task && $task->getId() !== null;
+		$defaultIsDone = $taskHasId ? $task->isDone() : false;
+
 		$builder
 			->add('title', null, ['label' => 'Titre : '])
 			->add('content', TextareaType::class, ['label' => 'Contenu : '])
@@ -24,7 +28,7 @@ class TaskType extends AbstractType
 					'Non' => false,
 				],
 				'expanded' => true,
-				'data'     => $options['data'] && $options['data']->getId() ? $options['data']->isDone() : false,
+				'data'     => $defaultIsDone,
 				'label'    => 'Tâche terminée',
 			]);
 		if ($options['from'] === 'ADD') {
@@ -41,7 +45,7 @@ class TaskType extends AbstractType
 		}
 	}
 
-	public function configureOptions(OptionsResolver $resolver)
+	public function configureOptions(OptionsResolver $resolver): void
 	{
 		$resolver->setDefaults([
 			'data_class' => Task::class,

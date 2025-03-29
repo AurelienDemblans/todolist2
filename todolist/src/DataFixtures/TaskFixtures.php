@@ -15,12 +15,14 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
 	{
 		$faker = Factory::create('fr_FR');
 
-		foreach (UserFixtures::USER_FIXTURE_ARRAY as ['username' => $username,'roles' => $role, 'password' => $password, 'email' => $email]) {
+		foreach (UserFixtures::USER_FIXTURE_ARRAY as ['email' => $email]) {
 			for ($i = 0; $i < 5; ++$i) {
 				$task               = new Task();
 				$date               = $faker->dateTime();
 				$createdByReference = $email;
-				$title              = $createdByReference === 'anonyme@test.com' ? $faker->words(3, true) . ' (anonyme)' : $faker->words(3, true);
+				$words              = $faker->words(3, true);
+				/** @var string $words */
+				$title = $createdByReference === 'anonyme@test.com' ? $words . ' (anonyme)' : $words;
 
 				$task->setCreatedAt(\DateTimeImmutable::createFromMutable($date))
 				->setContent($faker->text(100))
@@ -34,7 +36,9 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
 				$task               = new Task();
 				$date               = $faker->dateTime();
 				$createdByReference = $email;
-				$title              = $createdByReference === 'anonyme@test.com' ? $faker->words(3, true) . ' (anonyme)' : $faker->words(3, true);
+				$words              = $faker->words(3, true);
+				/** @var string $words */
+				$title = $createdByReference === 'anonyme@test.com' ? $words . ' (anonyme)' : $words;
 
 				$task->setCreatedAt(\DateTimeImmutable::createFromMutable($date))
 				->setContent($faker->text(100))

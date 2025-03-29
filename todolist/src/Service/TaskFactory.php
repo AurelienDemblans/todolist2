@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Task;
+use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -27,7 +28,12 @@ class TaskFactory
 			throw new BadRequestHttpException('Aucun utilisateur connecté');
 		}
 
-		$task->setCreatedBy($this->security->getUser());
+		$user = $this->security->getUser();
+		if (!$user instanceof User) {
+			throw new BadRequestHttpException('L\'utilisateur n\'est pas du bon type');
+		}
+
+		$task->setCreatedBy($user);
 
 		return $task;
 	}

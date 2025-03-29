@@ -43,7 +43,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 	#[ORM\Column(type:'string', length:60, unique:true)]
 	#[Assert\NotBlank(message: 'Vous devez saisir une adresse email.')]
 	#[Assert\Email(message: "Le format de l'adresse n'est pas correcte.")]
-	private $email;
+	private string $email;
 
 	/**
 	 * @var Collection<int, Task>
@@ -78,7 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 		return $this->email;
 	}
 
-	public function setEmail($email): static
+	public function setEmail(string $email): static
 	{
 		$this->email = $email;
 
@@ -92,7 +92,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 	 */
 	public function getUserIdentifier(): string
 	{
-		return (string) $this->username;
+		return (string) $this->email;
 	}
 
 	/**
@@ -106,7 +106,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 		// guarantee every user at least has ROLE_USER
 		$roles[] = 'ROLE_USER';
 
-		return array_unique($roles);
+		return array_values(array_unique($roles));
 	}
 
 	/**

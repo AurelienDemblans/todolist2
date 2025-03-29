@@ -8,6 +8,8 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Task>
+ *
+ * @method Task[] findByIsDone(bool $isDone)
  */
 class TaskRepository extends ServiceEntityRepository
 {
